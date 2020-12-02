@@ -2,8 +2,6 @@ package googledatastudio
 
 import (
 	"bytes"
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 
 	bigquerytools "github.com/leapforce-libraries/go_bigquerytools"
@@ -31,6 +29,7 @@ type GoogleDataStudio struct {
 //
 func NewGoogleDataStudio(clientID string, clientSecret string, scope string, bigQuery *bigquerytools.BigQuery, isLive bool) *GoogleDataStudio {
 	gd := GoogleDataStudio{}
+	maxRetries := uint(3)
 	config := oauth2.OAuth2Config{
 		ApiName:         apiName,
 		ClientID:        clientID,
@@ -40,6 +39,7 @@ func NewGoogleDataStudio(clientID string, clientSecret string, scope string, big
 		AuthURL:         authURL,
 		TokenURL:        tokenURL,
 		TokenHTTPMethod: tokenHTTPMethod,
+		MaxRetries:      &maxRetries,
 	}
 	gd.oAuth2 = oauth2.NewOAuth(config, bigQuery, isLive)
 	return &gd
@@ -49,26 +49,13 @@ func (gc *GoogleDataStudio) InitToken() *errortools.Error {
 	return gc.oAuth2.InitToken()
 }
 
-func (gd *GoogleDataStudio) Get(url string, model interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	request, response, e := gd.oAuth2.Get(url, model)
+func (gd *GoogleDataStudio) get(url string, model interface{}) (*http.Request, *http.Response, *errortools.Error) {
+	err := Error{}
+	request, response, e := gd.oAuth2.Get(url, model, &err)
 	if e != nil {
-
-		defer response.Body.Close()
-
-		b, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			e.SetMessage(err)
-			return request, response, e
+		if err.Error.Message != "" {
+			e.SetMessage(err.Error.Message)
 		}
-
-		error_ := Error{}
-		err = json.Unmarshal(b, &error_)
-		if err != nil {
-			e.SetMessage(err)
-			return request, response, e
-		}
-
-		e.SetMessage(error_.Error.Message)
 
 		return request, response, e
 	}
@@ -76,26 +63,13 @@ func (gd *GoogleDataStudio) Get(url string, model interface{}) (*http.Request, *
 	return request, response, nil
 }
 
-func (gd *GoogleDataStudio) Patch(url string, requestBody []byte, model interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	request, response, e := gd.oAuth2.Patch(url, bytes.NewBuffer(requestBody), model)
+func (gd *GoogleDataStudio) patch(url string, requestBody []byte, model interface{}) (*http.Request, *http.Response, *errortools.Error) {
+	error_ := Error{}
+	request, response, e := gd.oAuth2.Patch(url, bytes.NewBuffer(requestBody), model, &error_)
 	if e != nil {
-
-		defer response.Body.Close()
-
-		b, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			e.SetMessage(err)
-			return request, response, e
+		if error_.Error.Message != "" {
+			e.SetMessage(error_.Error.Message)
 		}
-
-		error_ := Error{}
-		err = json.Unmarshal(b, &error_)
-		if err != nil {
-			e.SetMessage(err)
-			return request, response, e
-		}
-
-		e.SetMessage(error_.Error.Message)
 
 		return request, response, e
 	}

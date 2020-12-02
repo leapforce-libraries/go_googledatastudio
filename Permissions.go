@@ -53,7 +53,7 @@ func (gd *GoogleDataStudio) GetPermissions(params *GetPermissionsParams) (*Permi
 
 	permissionsObject := PermissionsObject{}
 
-	_, _, e := gd.Get(url, &permissionsObject)
+	_, _, e := gd.get(url, &permissionsObject)
 	if e != nil {
 		return nil, e
 	}
@@ -92,7 +92,7 @@ func (gd *GoogleDataStudio) PatchPermissions(params *PatchPermissionsParams) (*P
 
 	permissionsObject := PermissionsObject{}
 
-	_, _, e := gd.Patch(url, b, &permissionsObject)
+	_, _, e := gd.patch(url, b, &permissionsObject)
 	if e != nil {
 		return nil, e
 	}
