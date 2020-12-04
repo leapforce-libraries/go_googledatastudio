@@ -6,7 +6,7 @@ import (
 
 	bigquerytools "github.com/leapforce-libraries/go_bigquerytools"
 	errortools "github.com/leapforce-libraries/go_errortools"
-
+	google "github.com/leapforce-libraries/go_google"
 	oauth2 "github.com/leapforce-libraries/go_oauth2"
 )
 
@@ -50,7 +50,7 @@ func (gc *GoogleDataStudio) InitToken() *errortools.Error {
 }
 
 func (gd *GoogleDataStudio) get(url string, model interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	err := Error{}
+	err := google.ErrorResponse{}
 	request, response, e := gd.oAuth2.Get(url, model, &err)
 	if e != nil {
 		if err.Error.Message != "" {
@@ -64,11 +64,11 @@ func (gd *GoogleDataStudio) get(url string, model interface{}) (*http.Request, *
 }
 
 func (gd *GoogleDataStudio) patch(url string, requestBody []byte, model interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	error_ := Error{}
-	request, response, e := gd.oAuth2.Patch(url, bytes.NewBuffer(requestBody), model, &error_)
+	err := google.ErrorResponse{}
+	request, response, e := gd.oAuth2.Patch(url, bytes.NewBuffer(requestBody), model, &err)
 	if e != nil {
-		if error_.Error.Message != "" {
-			e.SetMessage(error_.Error.Message)
+		if err.Error.Message != "" {
+			e.SetMessage(err.Error.Message)
 		}
 
 		return request, response, e
