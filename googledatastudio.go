@@ -27,7 +27,7 @@ type GoogleDataStudio struct {
 
 // methods
 //
-func NewGoogleDataStudio(clientID string, clientSecret string, scope string, bigQuery *bigquerytools.BigQuery, isLive bool) *GoogleDataStudio {
+func NewGoogleDataStudio(clientID string, clientSecret string, scope string, bigQuery *bigquerytools.BigQuery) *GoogleDataStudio {
 	gd := GoogleDataStudio{}
 	maxRetries := uint(3)
 	config := oauth2.OAuth2Config{
@@ -41,7 +41,7 @@ func NewGoogleDataStudio(clientID string, clientSecret string, scope string, big
 		TokenHTTPMethod: tokenHTTPMethod,
 		MaxRetries:      &maxRetries,
 	}
-	gd.oAuth2 = oauth2.NewOAuth(config, bigQuery, isLive)
+	gd.oAuth2 = oauth2.NewOAuth(config, bigQuery)
 	return &gd
 }
 
