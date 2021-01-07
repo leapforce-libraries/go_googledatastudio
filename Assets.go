@@ -74,7 +74,7 @@ func (gd *GoogleDataStudio) SearchAssets(params *SearchAssetsParams) (*[]Asset, 
 
 	assetsResponse := AssetsResponse{}
 
-	_, _, e := gd.get(url, &assetsResponse)
+	_, _, e := gd.Client.Get(url, &assetsResponse)
 	if e != nil {
 		return nil, e
 	}
