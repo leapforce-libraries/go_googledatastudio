@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	apiName string = "Service"
+	apiName string = "GoogleDataStudio"
 	apiURL  string = "https://datastudio.googleapis.com/v1"
 )
 
