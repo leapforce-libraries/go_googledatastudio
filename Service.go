@@ -1,6 +1,7 @@
 package googledatastudio
 
 import (
+	errortools "github.com/leapforce-libraries/go_errortools"
 	google "github.com/leapforce-libraries/go_google"
 )
 
@@ -28,4 +29,8 @@ func NewService(clientID string, clientSecret string, scope string, bigQuery *go
 	googleService := google.NewService(config, bigQuery)
 
 	return &Service{googleService}
+}
+
+func (service *Service) InitToken() *errortools.Error {
+	return service.googleService.InitToken()
 }
