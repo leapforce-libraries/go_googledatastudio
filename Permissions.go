@@ -37,7 +37,7 @@ type GetPermissionsParams struct {
 	Role    *Role
 }
 
-func (gd *GoogleDataStudio) GetPermissions(params *GetPermissionsParams) (*PermissionsObject, *errortools.Error) {
+func (service *Service) GetPermissions(params *GetPermissionsParams) (*PermissionsObject, *errortools.Error) {
 	if params == nil {
 		return nil, errortools.ErrorMessage("GetPermissionsParams cannot be nil.")
 	}
@@ -53,7 +53,7 @@ func (gd *GoogleDataStudio) GetPermissions(params *GetPermissionsParams) (*Permi
 
 	permissionsObject := PermissionsObject{}
 
-	_, _, e := gd.Client.Get(url, &permissionsObject)
+	_, _, e := service.googleService.Get(url, &permissionsObject)
 	if e != nil {
 		return nil, e
 	}
@@ -66,7 +66,7 @@ type PatchPermissionsParams struct {
 	PermissionsObject *PermissionsObject
 }
 
-func (gd *GoogleDataStudio) PatchPermissions(params *PatchPermissionsParams) (*PermissionsObject, *errortools.Error) {
+func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*PermissionsObject, *errortools.Error) {
 	if params == nil {
 		return nil, errortools.ErrorMessage("GetPermissionsParams cannot be nil.")
 	}
@@ -92,7 +92,7 @@ func (gd *GoogleDataStudio) PatchPermissions(params *PatchPermissionsParams) (*P
 
 	permissionsObject := PermissionsObject{}
 
-	_, _, e := gd.Client.Patch(url, b, &permissionsObject)
+	_, _, e := service.googleService.Patch(url, b, &permissionsObject)
 	if e != nil {
 		return nil, e
 	}

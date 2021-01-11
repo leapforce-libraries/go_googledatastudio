@@ -42,7 +42,7 @@ type SearchAssetsParams struct {
 	PageToken      *string
 }
 
-func (gd *GoogleDataStudio) SearchAssets(params *SearchAssetsParams) (*[]Asset, *errortools.Error) {
+func (service *Service) SearchAssets(params *SearchAssetsParams) (*[]Asset, *errortools.Error) {
 	if params == nil {
 		return nil, errortools.ErrorMessage("SearchAssetsParams cannot be nil.")
 	}
@@ -74,7 +74,7 @@ func (gd *GoogleDataStudio) SearchAssets(params *SearchAssetsParams) (*[]Asset, 
 
 	assetsResponse := AssetsResponse{}
 
-	_, _, e := gd.Client.Get(url, &assetsResponse)
+	_, _, e := service.googleService.Get(url, &assetsResponse)
 	if e != nil {
 		return nil, e
 	}
