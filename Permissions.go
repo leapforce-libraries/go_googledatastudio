@@ -1,10 +1,10 @@
 package googledatastudio
 
 import (
-	"encoding/json"
 	"fmt"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
+	oauth2 "github.com/leapforce-libraries/go_oauth2"
 )
 
 type Role string
@@ -48,12 +48,13 @@ func (service *Service) GetPermissions(params *GetPermissionsParams) (*Permissio
 		query = fmt.Sprintf("?role=%s", *params.Role)
 	}
 
-	url := fmt.Sprintf("%s/assets/%s/permissions%s", apiURL, params.AssetID, query)
-	fmt.Println(url)
-
 	permissionsObject := PermissionsObject{}
 
-	_, _, e := service.googleService.Get(url, &permissionsObject)
+	requestConfig := oauth2.RequestConfig{
+		URL:           service.url(fmt.Sprintf("assets/%s/permissions%s", params.AssetID, query)),
+		ResponseModel: &permissionsObject,
+	}
+	_, _, e := service.googleService.Get(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -74,9 +75,6 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 		return nil, errortools.ErrorMessage("PermissionsObject cannot be nil.")
 	}
 
-	url := fmt.Sprintf("%s/assets/%s/permissions", apiURL, params.AssetID)
-	fmt.Println(url)
-
 	requestBody := struct {
 		Name        string            `json:"name"`
 		Permissions PermissionsObject `json:"permissions"`
@@ -85,14 +83,14 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 		*params.PermissionsObject,
 	}
 
-	b, err := json.Marshal(&requestBody)
-	if err != nil {
-		return nil, errortools.ErrorMessage(err)
-	}
-
 	permissionsObject := PermissionsObject{}
 
-	_, _, e := service.googleService.Patch(url, b, &permissionsObject)
+	requestConfig := oauth2.RequestConfig{
+		URL:           service.url(fmt.Sprintf("assets/%s/permissions", params.AssetID)),
+		BodyModel:     requestBody,
+		ResponseModel: &permissionsObject,
+	}
+	_, _, e := service.googleService.Patch(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
