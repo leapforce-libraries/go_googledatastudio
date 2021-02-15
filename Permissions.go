@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
-	oauth2 "github.com/leapforce-libraries/go_oauth2"
+	go_http "github.com/leapforce-libraries/go_http"
 )
 
 type Role string
@@ -50,7 +50,7 @@ func (service *Service) GetPermissions(params *GetPermissionsParams) (*Permissio
 
 	permissionsObject := PermissionsObject{}
 
-	requestConfig := oauth2.RequestConfig{
+	requestConfig := go_http.RequestConfig{
 		URL:           service.url(fmt.Sprintf("assets/%s/permissions%s", params.AssetID, query)),
 		ResponseModel: &permissionsObject,
 	}
@@ -85,7 +85,7 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 
 	permissionsObject := PermissionsObject{}
 
-	requestConfig := oauth2.RequestConfig{
+	requestConfig := go_http.RequestConfig{
 		URL:           service.url(fmt.Sprintf("assets/%s/permissions", params.AssetID)),
 		BodyModel:     requestBody,
 		ResponseModel: &permissionsObject,

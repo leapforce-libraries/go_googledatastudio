@@ -6,7 +6,7 @@ import (
 	"time"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
-	oauth2 "github.com/leapforce-libraries/go_oauth2"
+	go_http "github.com/leapforce-libraries/go_http"
 )
 
 type AssetType string
@@ -72,7 +72,7 @@ func (service *Service) SearchAssets(params *SearchAssetsParams) (*[]Asset, *err
 
 	assetsResponse := AssetsResponse{}
 
-	requestConfig := oauth2.RequestConfig{
+	requestConfig := go_http.RequestConfig{
 		URL:           service.url(fmt.Sprintf("assets:search?%s", strings.Join(query, "&"))),
 		ResponseModel: &assetsResponse,
 	}
