@@ -69,7 +69,7 @@ type PatchPermissionsParams struct {
 
 func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*PermissionsObject, *errortools.Error) {
 	if params == nil {
-		return nil, errortools.ErrorMessage("GetPermissionsParams cannot be nil.")
+		return nil, errortools.ErrorMessage("PatchPermissionsParams cannot be nil.")
 	}
 	if params.PermissionsObject == nil {
 		return nil, errortools.ErrorMessage("PermissionsObject cannot be nil.")
