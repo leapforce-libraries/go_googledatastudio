@@ -101,7 +101,7 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 type AddMembersParams struct {
 	AssetID string
 	Role    Role
-	Members *Members
+	Members *[]Member
 }
 
 func (service *Service) AddMembers(params *AddMembersParams) (*PermissionsObject, *errortools.Error) {
@@ -112,26 +112,40 @@ func (service *Service) AddMembers(params *AddMembersParams) (*PermissionsObject
 		return nil, errortools.ErrorMessage("Members cannot be nil.")
 	}
 
-	requestBody := struct {
-		Name    string  `json:"name"`
-		Role    string  `json:"role"`
-		Members Members `json:"members"`
-	}{
-		params.AssetID,
-		string(params.Role),
-		*params.Members,
-	}
+	// add members in batches
+	batchSize := 10
+	members := []Member{}
 
 	permissionsObject := PermissionsObject{}
 
-	requestConfig := go_http.RequestConfig{
-		URL:           service.url(fmt.Sprintf("assets/%s/permissions:addMembers", params.AssetID)),
-		BodyModel:     requestBody,
-		ResponseModel: &permissionsObject,
-	}
-	_, _, e := service.googleService.Patch(&requestConfig)
-	if e != nil {
-		return nil, e
+	for i, member := range *params.Members {
+		i++
+		members = append(members, member)
+
+		if i%batchSize == 0 || i == len(*params.Members) {
+
+			requestBody := struct {
+				Name    string   `json:"name"`
+				Role    string   `json:"role"`
+				Members []Member `json:"members"`
+			}{
+				params.AssetID,
+				string(params.Role),
+				members,
+			}
+
+			requestConfig := go_http.RequestConfig{
+				URL:           service.url(fmt.Sprintf("assets/%s/permissions:addMembers", params.AssetID)),
+				BodyModel:     requestBody,
+				ResponseModel: &permissionsObject,
+			}
+			_, _, e := service.googleService.Post(&requestConfig)
+			if e != nil {
+				return nil, e
+			}
+
+			members = []Member{}
+		}
 	}
 
 	return &permissionsObject, nil
@@ -139,7 +153,7 @@ func (service *Service) AddMembers(params *AddMembersParams) (*PermissionsObject
 
 type RevokeAllPermissionsParams struct {
 	AssetID string
-	Members *Members
+	Members *[]Member
 }
 
 func (service *Service) RevokeAllPermissions(params *RevokeAllPermissionsParams) (*PermissionsObject, *errortools.Error) {
@@ -150,24 +164,35 @@ func (service *Service) RevokeAllPermissions(params *RevokeAllPermissionsParams)
 		return nil, errortools.ErrorMessage("Members cannot be nil.")
 	}
 
-	requestBody := struct {
-		Name    string  `json:"name"`
-		Members Members `json:"members"`
-	}{
-		params.AssetID,
-		*params.Members,
-	}
+	// remove members in batches
+	batchSize := 10
+	members := []Member{}
 
 	permissionsObject := PermissionsObject{}
 
-	requestConfig := go_http.RequestConfig{
-		URL:           service.url(fmt.Sprintf("assets/%s/permissions:revokeAllPermissions", params.AssetID)),
-		BodyModel:     requestBody,
-		ResponseModel: &permissionsObject,
-	}
-	_, _, e := service.googleService.Post(&requestConfig)
-	if e != nil {
-		return nil, e
+	for i, member := range *params.Members {
+		i++
+		members = append(members, member)
+
+		if i%batchSize == 0 || i == len(*params.Members) {
+			requestBody := struct {
+				Name    string   `json:"name"`
+				Members []Member `json:"members"`
+			}{
+				params.AssetID,
+				members,
+			}
+
+			requestConfig := go_http.RequestConfig{
+				URL:           service.url(fmt.Sprintf("assets/%s/permissions:revokeAllPermissions", params.AssetID)),
+				BodyModel:     requestBody,
+				ResponseModel: &permissionsObject,
+			}
+			_, _, e := service.googleService.Post(&requestConfig)
+			if e != nil {
+				return nil, e
+			}
+		}
 	}
 
 	return &permissionsObject, nil
