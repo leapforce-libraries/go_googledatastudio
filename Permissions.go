@@ -97,3 +97,78 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 
 	return &permissionsObject, nil
 }
+
+type AddMembersParams struct {
+	AssetID string
+	Role    Role
+	Members *Members
+}
+
+func (service *Service) AddMembers(params *AddMembersParams) (*PermissionsObject, *errortools.Error) {
+	if params == nil {
+		return nil, errortools.ErrorMessage("AddMembersParams cannot be nil.")
+	}
+	if params.Members == nil {
+		return nil, errortools.ErrorMessage("Members cannot be nil.")
+	}
+
+	requestBody := struct {
+		Name    string  `json:"name"`
+		Role    string  `json:"role"`
+		Members Members `json:"members"`
+	}{
+		params.AssetID,
+		string(params.Role),
+		*params.Members,
+	}
+
+	permissionsObject := PermissionsObject{}
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url(fmt.Sprintf("assets/%s/permissions:addMembers", params.AssetID)),
+		BodyModel:     requestBody,
+		ResponseModel: &permissionsObject,
+	}
+	_, _, e := service.googleService.Patch(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
+
+	return &permissionsObject, nil
+}
+
+type RevokeAllPermissionsParams struct {
+	AssetID string
+	Members *Members
+}
+
+func (service *Service) RevokeAllPermissions(params *RevokeAllPermissionsParams) (*PermissionsObject, *errortools.Error) {
+	if params == nil {
+		return nil, errortools.ErrorMessage("RevokeAllPermissionsParams cannot be nil.")
+	}
+	if params.Members == nil {
+		return nil, errortools.ErrorMessage("Members cannot be nil.")
+	}
+
+	requestBody := struct {
+		Name    string  `json:"name"`
+		Members Members `json:"members"`
+	}{
+		params.AssetID,
+		*params.Members,
+	}
+
+	permissionsObject := PermissionsObject{}
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url(fmt.Sprintf("assets/%s/permissions:revokeAllPermissions", params.AssetID)),
+		BodyModel:     requestBody,
+		ResponseModel: &permissionsObject,
+	}
+	_, _, e := service.googleService.Post(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
+
+	return &permissionsObject, nil
+}
