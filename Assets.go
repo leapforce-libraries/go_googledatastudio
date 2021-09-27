@@ -48,6 +48,8 @@ func (service *Service) SearchAssets(params *SearchAssetsParams) (*[]Asset, *err
 		return nil, errortools.ErrorMessage("SearchAssetsParams cannot be nil.")
 	}
 
+	assets := []Asset{}
+
 	query := []string{}
 
 	query = append(query, fmt.Sprintf("assetTypes=%s", params.AssetTypes))
@@ -66,20 +68,36 @@ func (service *Service) SearchAssets(params *SearchAssetsParams) (*[]Asset, *err
 	if params.PageSize != nil {
 		query = append(query, fmt.Sprintf("pageSize=%v", *params.PageSize))
 	}
-	if params.PageToken != nil {
-		query = append(query, fmt.Sprintf("pageToken=%v", *params.PageToken))
+
+	pageToken := params.PageToken
+
+	for {
+		if pageToken != nil {
+			query = append(query, fmt.Sprintf("pageToken=%v", *params.PageToken))
+		}
+
+		assetsResponse := AssetsResponse{}
+
+		requestConfig := go_http.RequestConfig{
+			URL:           service.url(fmt.Sprintf("assets:search?%s", strings.Join(query, "&"))),
+			ResponseModel: &assetsResponse,
+		}
+		_, _, e := service.googleService.Get(&requestConfig)
+		if e != nil {
+			return nil, e
+		}
+
+		assets = append(assets, assetsResponse.Assets...)
+
+		if params.PageToken != nil {
+			break
+		}
+		if assetsResponse.NextPageToken == "" {
+			break
+		}
+
+		pageToken = &assetsResponse.NextPageToken
 	}
 
-	assetsResponse := AssetsResponse{}
-
-	requestConfig := go_http.RequestConfig{
-		URL:           service.url(fmt.Sprintf("assets:search?%s", strings.Join(query, "&"))),
-		ResponseModel: &assetsResponse,
-	}
-	_, _, e := service.googleService.Get(&requestConfig)
-	if e != nil {
-		return nil, e
-	}
-
-	return &assetsResponse.Assets, nil
+	return &assets, nil
 }
