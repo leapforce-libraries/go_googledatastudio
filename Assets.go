@@ -2,6 +2,7 @@ package googledatastudio
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -79,10 +80,11 @@ func (service *Service) SearchAssets(params *SearchAssetsParams) (*[]Asset, *err
 		assetsResponse := AssetsResponse{}
 
 		requestConfig := go_http.RequestConfig{
+			Method:        http.MethodGet,
 			URL:           service.url(fmt.Sprintf("assets:search?%s", strings.Join(query, "&"))),
 			ResponseModel: &assetsResponse,
 		}
-		_, _, e := service.googleService.Get(&requestConfig)
+		_, _, e := service.googleService.HTTPRequest(&requestConfig)
 		if e != nil {
 			return nil, e
 		}

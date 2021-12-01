@@ -2,6 +2,7 @@ package googledatastudio
 
 import (
 	"fmt"
+	"net/http"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
@@ -51,10 +52,11 @@ func (service *Service) GetPermissions(params *GetPermissionsParams) (*Permissio
 	permissionsObject := PermissionsObject{}
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url(fmt.Sprintf("assets/%s/permissions%s", params.AssetID, query)),
 		ResponseModel: &permissionsObject,
 	}
-	_, _, e := service.googleService.Get(&requestConfig)
+	_, _, e := service.googleService.HTTPRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -86,11 +88,12 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 	permissionsObject := PermissionsObject{}
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodPatch,
 		URL:           service.url(fmt.Sprintf("assets/%s/permissions", params.AssetID)),
 		BodyModel:     requestBody,
 		ResponseModel: &permissionsObject,
 	}
-	_, _, e := service.googleService.Patch(&requestConfig)
+	_, _, e := service.googleService.HTTPRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -135,11 +138,12 @@ func (service *Service) AddMembers(params *AddMembersParams) (*PermissionsObject
 			}
 
 			requestConfig := go_http.RequestConfig{
+				Method:        http.MethodPost,
 				URL:           service.url(fmt.Sprintf("assets/%s/permissions:addMembers", params.AssetID)),
 				BodyModel:     requestBody,
 				ResponseModel: &permissionsObject,
 			}
-			_, _, e := service.googleService.Post(&requestConfig)
+			_, _, e := service.googleService.HTTPRequest(&requestConfig)
 			if e != nil {
 				return nil, e
 			}
@@ -184,11 +188,12 @@ func (service *Service) RevokeAllPermissions(params *RevokeAllPermissionsParams)
 			}
 
 			requestConfig := go_http.RequestConfig{
+				Method:        http.MethodPost,
 				URL:           service.url(fmt.Sprintf("assets/%s/permissions:revokeAllPermissions", params.AssetID)),
 				BodyModel:     requestBody,
 				ResponseModel: &permissionsObject,
 			}
-			_, _, e := service.googleService.Post(&requestConfig)
+			_, _, e := service.googleService.HTTPRequest(&requestConfig)
 			if e != nil {
 				return nil, e
 			}
