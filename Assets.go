@@ -81,10 +81,10 @@ func (service *Service) SearchAssets(params *SearchAssetsParams) (*[]Asset, *err
 
 		requestConfig := go_http.RequestConfig{
 			Method:        http.MethodGet,
-			URL:           service.url(fmt.Sprintf("assets:search?%s", strings.Join(query, "&"))),
+			Url:           service.url(fmt.Sprintf("assets:search?%s", strings.Join(query, "&"))),
 			ResponseModel: &assetsResponse,
 		}
-		_, _, e := service.googleService.HTTPRequest(&requestConfig)
+		_, _, e := service.googleService.HttpRequest(&requestConfig)
 		if e != nil {
 			return nil, e
 		}

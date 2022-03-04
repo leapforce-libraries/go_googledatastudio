@@ -53,10 +53,10 @@ func (service *Service) GetPermissions(params *GetPermissionsParams) (*Permissio
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url(fmt.Sprintf("assets/%s/permissions%s", params.AssetID, query)),
+		Url:           service.url(fmt.Sprintf("assets/%s/permissions%s", params.AssetID, query)),
 		ResponseModel: &permissionsObject,
 	}
-	_, _, e := service.googleService.HTTPRequest(&requestConfig)
+	_, _, e := service.googleService.HttpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -89,11 +89,11 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPatch,
-		URL:           service.url(fmt.Sprintf("assets/%s/permissions", params.AssetID)),
+		Url:           service.url(fmt.Sprintf("assets/%s/permissions", params.AssetID)),
 		BodyModel:     requestBody,
 		ResponseModel: &permissionsObject,
 	}
-	_, _, e := service.googleService.HTTPRequest(&requestConfig)
+	_, _, e := service.googleService.HttpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -139,11 +139,11 @@ func (service *Service) AddMembers(params *AddMembersParams) (*PermissionsObject
 
 			requestConfig := go_http.RequestConfig{
 				Method:        http.MethodPost,
-				URL:           service.url(fmt.Sprintf("assets/%s/permissions:addMembers", params.AssetID)),
+				Url:           service.url(fmt.Sprintf("assets/%s/permissions:addMembers", params.AssetID)),
 				BodyModel:     requestBody,
 				ResponseModel: &permissionsObject,
 			}
-			_, _, e := service.googleService.HTTPRequest(&requestConfig)
+			_, _, e := service.googleService.HttpRequest(&requestConfig)
 			if e != nil {
 				return nil, e
 			}
@@ -189,11 +189,11 @@ func (service *Service) RevokeAllPermissions(params *RevokeAllPermissionsParams)
 
 			requestConfig := go_http.RequestConfig{
 				Method:        http.MethodPost,
-				URL:           service.url(fmt.Sprintf("assets/%s/permissions:revokeAllPermissions", params.AssetID)),
+				Url:           service.url(fmt.Sprintf("assets/%s/permissions:revokeAllPermissions", params.AssetID)),
 				BodyModel:     requestBody,
 				ResponseModel: &permissionsObject,
 			}
-			_, _, e := service.googleService.HTTPRequest(&requestConfig)
+			_, _, e := service.googleService.HttpRequest(&requestConfig)
 			if e != nil {
 				return nil, e
 			}
