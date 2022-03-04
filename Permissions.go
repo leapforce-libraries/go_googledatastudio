@@ -34,7 +34,7 @@ type Members struct {
 type Member string
 
 type GetPermissionsParams struct {
-	AssetID string
+	AssetId string
 	Role    *Role
 }
 
@@ -53,7 +53,7 @@ func (service *Service) GetPermissions(params *GetPermissionsParams) (*Permissio
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		Url:           service.url(fmt.Sprintf("assets/%s/permissions%s", params.AssetID, query)),
+		Url:           service.url(fmt.Sprintf("assets/%s/permissions%s", params.AssetId, query)),
 		ResponseModel: &permissionsObject,
 	}
 	_, _, e := service.googleService.HttpRequest(&requestConfig)
@@ -65,7 +65,7 @@ func (service *Service) GetPermissions(params *GetPermissionsParams) (*Permissio
 }
 
 type PatchPermissionsParams struct {
-	AssetID           string
+	AssetId           string
 	PermissionsObject *PermissionsObject
 }
 
@@ -81,7 +81,7 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 		Name        string            `json:"name"`
 		Permissions PermissionsObject `json:"permissions"`
 	}{
-		params.AssetID,
+		params.AssetId,
 		*params.PermissionsObject,
 	}
 
@@ -89,7 +89,7 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPatch,
-		Url:           service.url(fmt.Sprintf("assets/%s/permissions", params.AssetID)),
+		Url:           service.url(fmt.Sprintf("assets/%s/permissions", params.AssetId)),
 		BodyModel:     requestBody,
 		ResponseModel: &permissionsObject,
 	}
@@ -102,7 +102,7 @@ func (service *Service) PatchPermissions(params *PatchPermissionsParams) (*Permi
 }
 
 type AddMembersParams struct {
-	AssetID string
+	AssetId string
 	Role    Role
 	Members *[]Member
 }
@@ -132,14 +132,14 @@ func (service *Service) AddMembers(params *AddMembersParams) (*PermissionsObject
 				Role    string   `json:"role"`
 				Members []Member `json:"members"`
 			}{
-				params.AssetID,
+				params.AssetId,
 				string(params.Role),
 				members,
 			}
 
 			requestConfig := go_http.RequestConfig{
 				Method:        http.MethodPost,
-				Url:           service.url(fmt.Sprintf("assets/%s/permissions:addMembers", params.AssetID)),
+				Url:           service.url(fmt.Sprintf("assets/%s/permissions:addMembers", params.AssetId)),
 				BodyModel:     requestBody,
 				ResponseModel: &permissionsObject,
 			}
@@ -156,7 +156,7 @@ func (service *Service) AddMembers(params *AddMembersParams) (*PermissionsObject
 }
 
 type RevokeAllPermissionsParams struct {
-	AssetID string
+	AssetId string
 	Members *[]Member
 }
 
@@ -183,13 +183,13 @@ func (service *Service) RevokeAllPermissions(params *RevokeAllPermissionsParams)
 				Name    string   `json:"name"`
 				Members []Member `json:"members"`
 			}{
-				params.AssetID,
+				params.AssetId,
 				members,
 			}
 
 			requestConfig := go_http.RequestConfig{
 				Method:        http.MethodPost,
-				Url:           service.url(fmt.Sprintf("assets/%s/permissions:revokeAllPermissions", params.AssetID)),
+				Url:           service.url(fmt.Sprintf("assets/%s/permissions:revokeAllPermissions", params.AssetId)),
 				BodyModel:     requestBody,
 				ResponseModel: &permissionsObject,
 			}
