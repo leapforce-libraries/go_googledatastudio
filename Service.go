@@ -43,3 +43,7 @@ func (service *Service) ApiCallCount() int64 {
 func (service *Service) ApiReset() {
 	service.googleService.ApiReset()
 }
+
+func (service *Service) ErrorResponse() *google.ErrorResponse {
+	return service.googleService.ErrorResponse()
+}
